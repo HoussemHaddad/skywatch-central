@@ -1,22 +1,22 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Plus, Edit, Trash2, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Eye, Edit, Trash2, Search } from "lucide-react";
+import { DerangementDialog } from "./DerangementDialog";
 
 export const DerangementsTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
-
-  const derangements = [
-    { id: "D001", station: "BS002", type: "Transmission", severite: "Moyenne", description: "Perte de signal intermittente", date: "2024-01-15", statut: "En cours" },
-    { id: "D002", station: "BS004", type: "Antenne", severite: "Haute", description: "Antenne désalignée après tempête", date: "2024-01-14", statut: "Critique" },
-    { id: "D003", station: "BS001", type: "Alimentation", severite: "Faible", description: "Fluctuation de tension détectée", date: "2024-01-13", statut: "Résolu" },
-    { id: "D004", station: "BS003", type: "Refroidissement", severite: "Haute", description: "Surchauffe des équipements", date: "2024-01-12", statut: "En cours" },
-    { id: "D005", station: "BS005", type: "Connectivité", severite: "Moyenne", description: "Latence élevée observée", date: "2024-01-11", statut: "Planifié" },
-    { id: "D006", station: "BS006", type: "Hardware", severite: "Faible", description: "Alerte maintenance préventive", date: "2024-01-10", statut: "Résolu" },
-  ];
+  const [derangements, setDerangements] = useState([
+    { id: "DRG001", station: "BS001", type: "Panne équipement", severite: "Critique", description: "Panne complète du contrôleur principal", date: "22/01/2024", statut: "En cours" },
+    { id: "DRG002", station: "BS002", type: "Problème transmission", severite: "Majeure", description: "Perte de signal intermittente", date: "21/01/2024", statut: "En cours" },
+    { id: "DRG003", station: "BS003", type: "Coupure électrique", severite: "Critique", description: "Coupure totale d'alimentation", date: "20/01/2024", statut: "Résolu" },
+    { id: "DRG004", station: "BS004", type: "Antenne défaillante", severite: "Majeure", description: "Antenne désalignée après tempête", date: "19/01/2024", statut: "En cours" },
+    { id: "DRG005", station: "BS005", type: "Maintenance", severite: "Mineure", description: "Maintenance préventive requise", date: "18/01/2024", statut: "En attente" },
+    { id: "DRG006", station: "BS006", type: "Maintenance", severite: "Faible", description: "Maintenance préventive programmée", date: "20/01/2024", statut: "En cours" },
+  ]);
 
   const filteredDerangements = derangements.filter(derangement =>
     derangement.station.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -27,12 +27,14 @@ export const DerangementsTable = () => {
 
   const getSeverityBadge = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case "haute":
-        return <Badge variant="fault">Haute</Badge>;
-      case "moyenne":
-        return <Badge variant="maintenance">Moyenne</Badge>;
+      case "critique":
+        return <Badge variant="fault">Critique</Badge>;
+      case "majeure":
+        return <Badge variant="maintenance">Majeure</Badge>;
+      case "mineure":
+        return <Badge variant="active">Mineure</Badge>;
       case "faible":
-        return <Badge variant="active">Faible</Badge>;
+        return <Badge variant="inactive">Faible</Badge>;
       default:
         return <Badge variant="inactive">{severity}</Badge>;
     }
@@ -62,10 +64,7 @@ export const DerangementsTable = () => {
             Suivi des incidents et maintenance de votre réseau
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau Dérangement
-        </Button>
+        <DerangementDialog onAddDerangement={(newDerangement) => setDerangements([...derangements, newDerangement])} />
       </div>
 
       <Card>
@@ -118,7 +117,11 @@ export const DerangementsTable = () => {
                       <Button variant="ghost" size="icon">
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setDerangements(derangements.filter(d => d.id !== derangement.id))}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

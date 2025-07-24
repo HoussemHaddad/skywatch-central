@@ -31,7 +31,11 @@ const Index = () => {
   };
 
   return (
-    <Layout currentView={currentView} onViewChange={setCurrentView}>
+    <Layout 
+      currentView={currentView} 
+      onViewChange={setCurrentView}
+      onLogout={() => setIsAuthenticated(false)}
+    >
       {renderContent()}
     </Layout>
   );

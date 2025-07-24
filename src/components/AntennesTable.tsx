@@ -1,21 +1,23 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Plus, Edit, Trash2, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Edit, Settings, Trash2, Search } from "lucide-react";
+import { AntenneDialog } from "./AntenneDialog";
 
 export const AntennesTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
-
-  const antennes = [
-    { id: "A001", station: "BS001", type: "Directive", frequence: "2.1 GHz", azimut: "45°", inclinaison: "3°" },
-    { id: "A002", station: "BS001", type: "Omnidirectionnelle", frequence: "900 MHz", azimut: "0°", inclinaison: "0°" },
-    { id: "A003", station: "BS002", type: "Directive", frequence: "1.8 GHz", azimut: "120°", inclinaison: "5°" },
-    { id: "A004", station: "BS003", type: "Directive", frequence: "2.6 GHz", azimut: "240°", inclinaison: "2°" },
-    { id: "A005", station: "BS004", type: "Panneau", frequence: "3.5 GHz", azimut: "180°", inclinaison: "8°" },
-    { id: "A006", station: "BS005", type: "Directive", frequence: "700 MHz", azimut: "90°", inclinaison: "4°" },
-  ];
+  const [antennes, setAntennes] = useState([
+    { id: "ANT001", station: "BS001", type: "Sectorielle", frequence: "2.1 GHz", azimut: "45°", inclinaison: "3°" },
+    { id: "ANT002", station: "BS001", type: "Omnidirectionnelle", frequence: "900 MHz", azimut: "0°", inclinaison: "0°" },
+    { id: "ANT003", station: "BS002", type: "Sectorielle", frequence: "1.8 GHz", azimut: "120°", inclinaison: "5°" },
+    { id: "ANT004", station: "BS003", type: "Sectorielle", frequence: "2.6 GHz", azimut: "240°", inclinaison: "2°" },
+    { id: "ANT005", station: "BS004", type: "Panneau", frequence: "3.5 GHz", azimut: "180°", inclinaison: "8°" },
+    { id: "ANT006", station: "BS005", type: "Sectorielle", frequence: "700 MHz", azimut: "90°", inclinaison: "4°" },
+    { id: "ANT007", station: "BS007", type: "Panneau", frequence: "2.6 GHz", azimut: "300°", inclinaison: "6°" },
+    { id: "ANT008", station: "BS008", type: "Yagi", frequence: "800 MHz", azimut: "360°", inclinaison: "0°" },
+  ]);
 
   const filteredAntennes = antennes.filter(antenne =>
     antenne.station.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -33,10 +35,7 @@ export const AntennesTable = () => {
             Configuration des antennes de vos stations de base
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouvelle Antenne
-        </Button>
+        <AntenneDialog onAddAntenne={(newAntenne) => setAntennes([...antennes, newAntenne])} />
       </div>
 
       <Card>
@@ -87,7 +86,11 @@ export const AntennesTable = () => {
                       <Button variant="ghost" size="icon">
                         <Settings className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setAntennes(antennes.filter(a => a.id !== antenne.id))}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

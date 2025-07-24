@@ -1,22 +1,24 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Plus, Edit, Trash2, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Edit, Settings, Trash2, Search } from "lucide-react";
+import { TransmissionDialog } from "./TransmissionDialog";
 
 export const TransmissionsTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
-
-  const transmissions = [
-    { id: "T001", station: "BS001", type: "Fibre Optique", debit: "1 Gbps", statut: "Actif", operateur: "Orange" },
-    { id: "T002", station: "BS002", type: "Faisceau Hertzien", debit: "500 Mbps", statut: "Maintenance", operateur: "SFR" },
-    { id: "T003", station: "BS003", type: "Fibre Optique", debit: "2 Gbps", statut: "Actif", operateur: "Bouygues" },
-    { id: "T004", station: "BS004", type: "Satellite", debit: "100 Mbps", statut: "Défaillant", operateur: "Eutelsat" },
-    { id: "T005", station: "BS005", type: "Fibre Optique", debit: "1 Gbps", statut: "Actif", operateur: "Free" },
-    { id: "T006", station: "BS006", type: "Faisceau Hertzien", debit: "300 Mbps", statut: "Inactif", operateur: "Orange" },
-  ];
+  const [transmissions, setTransmissions] = useState([
+    { id: "TX001", station: "BS001", type: "Fibre optique", debit: "1 Gbps", statut: "Actif", operateur: "Tunisie Telecom" },
+    { id: "TX002", station: "BS002", type: "Faisceau hertzien", debit: "500 Mbps", statut: "Maintenance", operateur: "Ooredoo" },
+    { id: "TX003", station: "BS003", type: "Fibre optique", debit: "2 Gbps", statut: "Actif", operateur: "Orange" },
+    { id: "TX004", station: "BS004", type: "Satellite", debit: "100 Mbps", statut: "Inactif", operateur: "Tunisie Telecom" },
+    { id: "TX005", station: "BS005", type: "Fibre optique", debit: "1 Gbps", statut: "Actif", operateur: "Ooredoo" },
+    { id: "TX006", station: "BS006", type: "Faisceau hertzien", debit: "300 Mbps", statut: "Inactif", operateur: "Orange" },
+    { id: "TX007", station: "BS007", type: "Fibre optique", debit: "1.5 Gbps", statut: "Actif", operateur: "Tunisie Telecom" },
+    { id: "TX008", station: "BS008", type: "Cuivre", debit: "10 Mbps", statut: "Maintenance", operateur: "Tunisie Telecom" },
+  ]);
 
   const filteredTransmissions = transmissions.filter(transmission =>
     transmission.station.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -47,10 +49,7 @@ export const TransmissionsTable = () => {
             Gestion des liens de transmission de vos stations
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouvelle Transmission
-        </Button>
+        <TransmissionDialog onAddTransmission={(newTransmission) => setTransmissions([...transmissions, newTransmission])} />
       </div>
 
       <Card>
@@ -101,7 +100,11 @@ export const TransmissionsTable = () => {
                       <Button variant="ghost" size="icon">
                         <Settings className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setTransmissions(transmissions.filter(t => t.id !== transmission.id))}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
