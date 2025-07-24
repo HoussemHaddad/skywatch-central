@@ -52,6 +52,16 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				status: {
+					active: 'hsl(var(--status-active))',
+					'active-foreground': 'hsl(var(--status-active-foreground))',
+					maintenance: 'hsl(var(--status-maintenance))',
+					'maintenance-foreground': 'hsl(var(--status-maintenance-foreground))',
+					fault: 'hsl(var(--status-fault))',
+					'fault-foreground': 'hsl(var(--status-fault-foreground))',
+					inactive: 'hsl(var(--status-inactive))',
+					'inactive-foreground': 'hsl(var(--status-inactive-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
