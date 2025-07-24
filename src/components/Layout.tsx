@@ -32,8 +32,12 @@ export const Layout = ({ children, currentView, onViewChange }: LayoutProps) => 
       <header className="border-b bg-card/50 backdrop-blur-sm">
         <div className="flex h-16 items-center justify-between px-6">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Radio className="h-8 w-8 text-primary" />
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/lovable-uploads/d3bc21d6-d98d-4d6f-aba3-ba9e89559c88.png" 
+                alt="Tunisie Telecom" 
+                className="h-10 w-auto"
+              />
               <h1 className="text-xl font-bold">Base Station Controller</h1>
             </div>
           </div>
