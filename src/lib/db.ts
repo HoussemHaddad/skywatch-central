@@ -86,27 +86,6 @@ export const db = {
     }
   },
 
-// Helper to map French status to English
-function mapStatus(statut: string): 'active' | 'inactive' | 'maintenance' {
-  switch ((statut || '').toLowerCase()) {
-    case 'actif': return 'active';
-    case 'inactif': return 'inactive';
-    case 'maintenance': return 'maintenance';
-    default: return 'inactive';
-  }
-}
-
-// Helper to map English status to French
-function reverseMapStatus(status: string): string {
-  switch ((status || '').toLowerCase()) {
-    case 'active': return 'Actif';
-    case 'inactive': return 'Inactif';
-    case 'maintenance': return 'Maintenance';
-    default: return 'Inactif';
-  }
-}
-  },
-
   // Antennes
   antennes: {
     async getByStation(stationId: string) {
@@ -235,5 +214,26 @@ function reverseMapStatus(status: string): string {
         )
         .subscribe()
     }
+
+  }
+};
+
+// Helper to map French status to English
+function mapStatus(statut: string): 'active' | 'inactive' | 'maintenance' {
+  switch ((statut || '').toLowerCase()) {
+    case 'actif': return 'active';
+    case 'inactif': return 'inactive';
+    case 'maintenance': return 'maintenance';
+    default: return 'inactive';
+  }
+}
+
+// Helper to map English status to French
+function reverseMapStatus(status: string): string {
+  switch ((status || '').toLowerCase()) {
+    case 'active': return 'Actif';
+    case 'inactive': return 'Inactif';
+    case 'maintenance': return 'Maintenance';
+    default: return 'Inactif';
   }
 }

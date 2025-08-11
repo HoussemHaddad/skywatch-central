@@ -63,7 +63,8 @@ export const StationsTable = () => {
             Gestion des stations de base de votre réseau
           </p>
         </div>
-        <StationDialog onAddStation={handleAddStation} />
+        <StationDialog 
+  onAddStation={handleAddStation} />
       </div>
 
       <Card>

@@ -11,6 +11,7 @@ import type { Station } from "@/lib/types";
 
 interface StationDialogProps {
   onSuccess?: () => void;
+  onAddStation?: (station: Partial<Station>) => void;
   station?: Station | null;
   mode?: 'add' | 'edit';
   trigger?: React.ReactNode;
@@ -54,13 +55,13 @@ export const StationDialog = ({ onSuccess, station, mode = 'add', trigger }: Sta
           description: "La station a été mise à jour avec succès."
         });
       } else {
-        await db.stations.create(formData);
+        const created = await db.stations.create(formData);
         toast({
           title: "Station créée",
           description: "La nouvelle station a été créée avec succès."
         });
+        onAddStation?.(created);
       }
-      
       setFormData({
         name: "",
         location: "",
