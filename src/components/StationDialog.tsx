@@ -1,56 +1,106 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
+import { db } from "@/lib/db";
+import { useToast } from "@/components/ui/use-toast";
+import type { Station } from "@/lib/types";
 
 interface StationDialogProps {
-  onAddStation?: (station: any) => void;
+  onSuccess?: () => void;
+  station?: Station | null;
+  mode?: 'add' | 'edit';
+  trigger?: React.ReactNode;
 }
 
-export const StationDialog = ({ onAddStation }: StationDialogProps) => {
+export const StationDialog = ({ onSuccess, station, mode = 'add', trigger }: StationDialogProps) => {
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    nom: "",
-    localisation: "",
-    type: "",
-    typetech: "",
-    puissance: "",
-    hauteurSupport: ""
+    name: "",
+    location: "",
+    status: "active" as const
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (station && mode === 'edit') {
+      setFormData({
+        name: station.name,
+        location: station.location || "",
+        status: station.status || "active"
+      });
+    } else {
+      setFormData({
+        name: "",
+        location: "",
+        status: "active"
+      });
+    }
+  }, [station, mode, open]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newStation = {
-      id: `BS${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
-      ...formData,
-      statut: "Actif"
-    };
-    onAddStation?.(newStation);
-    setFormData({
-      nom: "",
-      localisation: "",
-      type: "",
-      typetech: "",
-      puissance: "",
-      hauteurSupport: ""
-    });
-    setOpen(false);
+    setLoading(true);
+    
+    try {
+      if (mode === 'edit' && station) {
+        await db.stations.update(station.id, formData);
+        toast({
+          title: "Station mise à jour",
+          description: "La station a été mise à jour avec succès."
+        });
+      } else {
+        await db.stations.create(formData);
+        toast({
+          title: "Station créée",
+          description: "La nouvelle station a été créée avec succès."
+        });
+      }
+      
+      setFormData({
+        name: "",
+        location: "",
+        status: "active"
+      });
+      setOpen(false);
+      onSuccess?.();
+    } catch (error) {
+      console.error('Error saving station:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'enregistrement de la station.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const defaultTrigger = mode === 'edit' ? (
+    <Button variant="ghost" size="icon">
+      <Edit className="h-4 w-4" />
+    </Button>
+  ) : (
+    <Button>
+      <Plus className="mr-2 h-4 w-4" />
+      Nouvelle Station
+    </Button>
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouvelle Station
-        </Button>
+        {trigger || defaultTrigger}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Ajouter une nouvelle station</DialogTitle>
+          <DialogTitle>
+            {mode === 'edit' ? 'Modifier la station' : 'Ajouter une nouvelle station'}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -132,7 +182,9 @@ export const StationDialog = ({ onAddStation }: StationDialogProps) => {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
-            <Button type="submit">Ajouter</Button>
+            <Button type="submit">
+              {mode === 'edit' ? 'Modifier' : 'Ajouter'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

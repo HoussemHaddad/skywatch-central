@@ -1,16 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 
-interface AntenneDialogProps {
-  onAddAntenne?: (antenne: any) => void;
+interface Antenne {
+  id: string;
+  station: string;
+  type: string;
+  frequence: string;
+  azimut: string;
+  inclinaison: string;
 }
 
-export const AntenneDialog = ({ onAddAntenne }: AntenneDialogProps) => {
+interface AntenneDialogProps {
+  onAddAntenne?: (antenne: Antenne) => void;
+  onEditAntenne?: (antenne: Antenne) => void;
+  antenne?: Antenne | null;
+  mode?: 'add' | 'edit';
+  trigger?: React.ReactNode;
+}
+
+export const AntenneDialog = ({ onAddAntenne, onEditAntenne, antenne, mode = 'add', trigger }: AntenneDialogProps) => {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     station: "",
@@ -20,13 +33,43 @@ export const AntenneDialog = ({ onAddAntenne }: AntenneDialogProps) => {
     inclinaison: ""
   });
 
+  useEffect(() => {
+    if (antenne && mode === 'edit') {
+      setFormData({
+        station: antenne.station,
+        type: antenne.type,
+        frequence: antenne.frequence,
+        azimut: antenne.azimut,
+        inclinaison: antenne.inclinaison
+      });
+    } else {
+      setFormData({
+        station: "",
+        type: "",
+        frequence: "",
+        azimut: "",
+        inclinaison: ""
+      });
+    }
+  }, [antenne, mode, open]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newAntenne = {
-      id: `ANT${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
-      ...formData
-    };
-    onAddAntenne?.(newAntenne);
+    
+    if (mode === 'edit' && antenne) {
+      const updatedAntenne = {
+        ...antenne,
+        ...formData
+      };
+      onEditAntenne?.(updatedAntenne);
+    } else {
+      const newAntenne = {
+        id: `ANT${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+        ...formData
+      };
+      onAddAntenne?.(newAntenne);
+    }
+    
     setFormData({
       station: "",
       type: "",
@@ -37,17 +80,27 @@ export const AntenneDialog = ({ onAddAntenne }: AntenneDialogProps) => {
     setOpen(false);
   };
 
+  const defaultTrigger = mode === 'edit' ? (
+    <Button variant="ghost" size="icon">
+      <Edit className="h-4 w-4" />
+    </Button>
+  ) : (
+    <Button>
+      <Plus className="mr-2 h-4 w-4" />
+      Nouvelle Antenne
+    </Button>
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouvelle Antenne
-        </Button>
+        {trigger || defaultTrigger}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Ajouter une nouvelle antenne</DialogTitle>
+          <DialogTitle>
+            {mode === 'edit' ? 'Modifier l\'antenne' : 'Ajouter une nouvelle antenne'}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -94,7 +147,7 @@ export const AntenneDialog = ({ onAddAntenne }: AntenneDialogProps) => {
                 id="azimut"
                 value={formData.azimut}
                 onChange={(e) => setFormData({ ...formData, azimut: e.target.value })}
-                placeholder="ex: 120°"
+                placeholder="ex: 45°"
                 required
               />
             </div>
@@ -106,7 +159,7 @@ export const AntenneDialog = ({ onAddAntenne }: AntenneDialogProps) => {
               id="inclinaison"
               value={formData.inclinaison}
               onChange={(e) => setFormData({ ...formData, inclinaison: e.target.value })}
-              placeholder="ex: 5°"
+              placeholder="ex: 3°"
               required
             />
           </div>
@@ -115,7 +168,9 @@ export const AntenneDialog = ({ onAddAntenne }: AntenneDialogProps) => {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
-            <Button type="submit">Ajouter</Button>
+            <Button type="submit">
+              {mode === 'edit' ? 'Modifier' : 'Ajouter'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -1,17 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 
-interface DerangementDialogProps {
-  onAddDerangement?: (derangement: any) => void;
+interface Derangement {
+  id: string;
+  station: string;
+  type: string;
+  severite: string;
+  description: string;
+  date: string;
+  statut: string;
 }
 
-export const DerangementDialog = ({ onAddDerangement }: DerangementDialogProps) => {
+interface DerangementDialogProps {
+  onAddDerangement?: (derangement: Derangement) => void;
+  onEditDerangement?: (derangement: Derangement) => void;
+  derangement?: Derangement | null;
+  mode?: 'add' | 'edit';
+  trigger?: React.ReactNode;
+}
+
+export const DerangementDialog = ({ onAddDerangement, onEditDerangement, derangement, mode = 'add', trigger }: DerangementDialogProps) => {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     station: "",
@@ -21,14 +35,44 @@ export const DerangementDialog = ({ onAddDerangement }: DerangementDialogProps) 
     statut: "En cours"
   });
 
+  useEffect(() => {
+    if (derangement && mode === 'edit') {
+      setFormData({
+        station: derangement.station,
+        type: derangement.type,
+        severite: derangement.severite,
+        description: derangement.description,
+        statut: derangement.statut
+      });
+    } else {
+      setFormData({
+        station: "",
+        type: "",
+        severite: "",
+        description: "",
+        statut: "En cours"
+      });
+    }
+  }, [derangement, mode, open]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newDerangement = {
-      id: `DRG${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
-      ...formData,
-      date: new Date().toLocaleDateString('fr-FR')
-    };
-    onAddDerangement?.(newDerangement);
+    
+    if (mode === 'edit' && derangement) {
+      const updatedDerangement = {
+        ...derangement,
+        ...formData
+      };
+      onEditDerangement?.(updatedDerangement);
+    } else {
+      const newDerangement = {
+        id: `DRG${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+        ...formData,
+        date: new Date().toLocaleDateString('fr-FR')
+      };
+      onAddDerangement?.(newDerangement);
+    }
+    
     setFormData({
       station: "",
       type: "",
@@ -39,17 +83,27 @@ export const DerangementDialog = ({ onAddDerangement }: DerangementDialogProps) 
     setOpen(false);
   };
 
+  const defaultTrigger = mode === 'edit' ? (
+    <Button variant="ghost" size="icon">
+      <Edit className="h-4 w-4" />
+    </Button>
+  ) : (
+    <Button>
+      <Plus className="mr-2 h-4 w-4" />
+      Nouveau Dérangement
+    </Button>
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouveau Dérangement
-        </Button>
+        {trigger || defaultTrigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Signaler un nouveau dérangement</DialogTitle>
+          <DialogTitle>
+            {mode === 'edit' ? 'Modifier le dérangement' : 'Ajouter un nouveau dérangement'}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -71,8 +125,8 @@ export const DerangementDialog = ({ onAddDerangement }: DerangementDialogProps) 
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Panne équipement">Panne équipement</SelectItem>
-                  <SelectItem value="Coupure électrique">Coupure électrique</SelectItem>
                   <SelectItem value="Problème transmission">Problème transmission</SelectItem>
+                  <SelectItem value="Coupure électrique">Coupure électrique</SelectItem>
                   <SelectItem value="Antenne défaillante">Antenne défaillante</SelectItem>
                   <SelectItem value="Maintenance">Maintenance</SelectItem>
                 </SelectContent>
@@ -103,8 +157,8 @@ export const DerangementDialog = ({ onAddDerangement }: DerangementDialogProps) 
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="En cours">En cours</SelectItem>
-                  <SelectItem value="Résolu">Résolu</SelectItem>
                   <SelectItem value="En attente">En attente</SelectItem>
+                  <SelectItem value="Résolu">Résolu</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -116,8 +170,7 @@ export const DerangementDialog = ({ onAddDerangement }: DerangementDialogProps) 
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Décrivez le problème en détail..."
-              rows={3}
+              placeholder="Description détaillée du problème..."
               required
             />
           </div>
@@ -126,7 +179,9 @@ export const DerangementDialog = ({ onAddDerangement }: DerangementDialogProps) 
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
-            <Button type="submit">Signaler</Button>
+            <Button type="submit">
+              {mode === 'edit' ? 'Modifier' : 'Ajouter'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -35,10 +35,10 @@ export const Dashboard = () => {
   ];
 
   const recentStations = [
-    { id: "BS001", nom: "Station Paris-Nord", localisation: "Paris 18ème", statut: "Actif", type: "Macro", puissance: "40W" },
-    { id: "BS002", nom: "Station Lyon-Centre", localisation: "Lyon 2ème", statut: "Maintenance", type: "Micro", puissance: "20W" },
-    { id: "BS003", nom: "Station Marseille-Sud", localisation: "Marseille 8ème", statut: "Actif", type: "Macro", puissance: "40W" },
-    { id: "BS004", nom: "Station Toulouse-Est", localisation: "Toulouse 3ème", statut: "Défaillant", type: "Pico", puissance: "10W" },
+    { id: "BS001", nom: "Station Tunis-Nord", localisation: "Tunis", statut: "Actif", type: "Macro", puissance: "40W" },
+    { id: "BS002", nom: "Station Sfax-Centre", localisation: "Sfax", statut: "Maintenance", type: "Micro", puissance: "20W" },
+    { id: "BS003", nom: "Station Sousse-Sud", localisation: "Sousse", statut: "Actif", type: "Macro", puissance: "40W" },
+    { id: "BS004", nom: "Station Bizerte-Est", localisation: "Bizerte", statut: "Défaillant", type: "Pico", puissance: "10W" },
   ];
 
   const recentDerangements = [

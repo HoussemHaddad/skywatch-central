@@ -1,16 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 
-interface TransmissionDialogProps {
-  onAddTransmission?: (transmission: any) => void;
+interface Transmission {
+  id: string;
+  station: string;
+  type: string;
+  debit: string;
+  statut: string;
+  operateur: string;
 }
 
-export const TransmissionDialog = ({ onAddTransmission }: TransmissionDialogProps) => {
+interface TransmissionDialogProps {
+  onAddTransmission?: (transmission: Transmission) => void;
+  onEditTransmission?: (transmission: Transmission) => void;
+  transmission?: Transmission | null;
+  mode?: 'add' | 'edit';
+  trigger?: React.ReactNode;
+}
+
+export const TransmissionDialog = ({ onAddTransmission, onEditTransmission, transmission, mode = 'add', trigger }: TransmissionDialogProps) => {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     station: "",
@@ -20,13 +33,43 @@ export const TransmissionDialog = ({ onAddTransmission }: TransmissionDialogProp
     statut: "Actif"
   });
 
+  useEffect(() => {
+    if (transmission && mode === 'edit') {
+      setFormData({
+        station: transmission.station,
+        type: transmission.type,
+        debit: transmission.debit,
+        operateur: transmission.operateur,
+        statut: transmission.statut
+      });
+    } else {
+      setFormData({
+        station: "",
+        type: "",
+        debit: "",
+        operateur: "",
+        statut: "Actif"
+      });
+    }
+  }, [transmission, mode, open]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newTransmission = {
-      id: `TX${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
-      ...formData
-    };
-    onAddTransmission?.(newTransmission);
+    
+    if (mode === 'edit' && transmission) {
+      const updatedTransmission = {
+        ...transmission,
+        ...formData
+      };
+      onEditTransmission?.(updatedTransmission);
+    } else {
+      const newTransmission = {
+        id: `TX${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
+        ...formData
+      };
+      onAddTransmission?.(newTransmission);
+    }
+    
     setFormData({
       station: "",
       type: "",
@@ -37,17 +80,27 @@ export const TransmissionDialog = ({ onAddTransmission }: TransmissionDialogProp
     setOpen(false);
   };
 
+  const defaultTrigger = mode === 'edit' ? (
+    <Button variant="ghost" size="icon">
+      <Edit className="h-4 w-4" />
+    </Button>
+  ) : (
+    <Button>
+      <Plus className="mr-2 h-4 w-4" />
+      Nouvelle Transmission
+    </Button>
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouvelle Transmission
-        </Button>
+        {trigger || defaultTrigger}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Ajouter une nouvelle transmission</DialogTitle>
+          <DialogTitle>
+            {mode === 'edit' ? 'Modifier la transmission' : 'Ajouter une nouvelle transmission'}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -121,7 +174,9 @@ export const TransmissionDialog = ({ onAddTransmission }: TransmissionDialogProp
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Annuler
             </Button>
-            <Button type="submit">Ajouter</Button>
+            <Button type="submit">
+              {mode === 'edit' ? 'Modifier' : 'Ajouter'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
