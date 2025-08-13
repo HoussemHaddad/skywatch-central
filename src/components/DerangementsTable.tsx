@@ -26,12 +26,12 @@ export const DerangementsTable = () => {
   const [sortField, setSortField] = useState<SortField>('id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [derangements, setDerangements] = useState<Derangement[]>([
-    { id: "DRG001", station: "BS001", type: "Panne équipement", severite: "Critique", description: "Panne complète du contrôleur principal", date: "22/01/2024", statut: "En cours" },
-    { id: "DRG002", station: "BS002", type: "Problème transmission", severite: "Majeure", description: "Perte de signal intermittente", date: "21/01/2024", statut: "En cours" },
-    { id: "DRG003", station: "BS003", type: "Coupure électrique", severite: "Critique", description: "Coupure totale d'alimentation", date: "20/01/2024", statut: "Résolu" },
-    { id: "DRG004", station: "BS004", type: "Antenne défaillante", severite: "Majeure", description: "Antenne désalignée après tempête", date: "19/01/2024", statut: "En cours" },
-    { id: "DRG005", station: "BS005", type: "Maintenance", severite: "Mineure", description: "Maintenance préventive requise", date: "18/01/2024", statut: "En attente" },
-    { id: "DRG006", station: "BS006", type: "Maintenance", severite: "Faible", description: "Maintenance préventive programmée", date: "20/01/2024", statut: "En cours" },
+    { id: "DRG001", station: "BS001", type: "Panne équipement", severite: "Critique", description: "Panne complète du contrôleur principal", date: "22/07/2025", statut: "En cours" },
+    { id: "DRG002", station: "BS002", type: "Problème transmission", severite: "Majeure", description: "Perte de signal intermittente", date: "21/07/2025", statut: "En cours" },
+    { id: "DRG003", station: "BS003", type: "Coupure électrique", severite: "Critique", description: "Coupure totale d'alimentation", date: "20/07/2025", statut: "Résolu" },
+    { id: "DRG004", station: "BS004", type: "Antenne défaillante", severite: "Majeure", description: "Antenne désalignée après tempête", date: "19/09/2025", statut: "En cours" },
+    { id: "DRG005", station: "BS005", type: "Maintenance", severite: "Mineure", description: "Maintenance préventive requise", date: "18/07/2025", statut: "En attente" },
+    { id: "DRG006", station: "BS006", type: "Maintenance", severite: "Faible", description: "Maintenance préventive programmée", date: "20/07/2025", statut: "En cours" },
   ]);
 
   const handleSort = (field: SortField) => {
